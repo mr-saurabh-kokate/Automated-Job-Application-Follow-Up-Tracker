@@ -1,69 +1,121 @@
 # Automated Job Application & Follow-Up Tracker
 
-## Project Overview
+## 📌 Project Overview
 
-Automated Job Application & Follow-Up Tracker is a Google Apps Script based automation system designed to simplify and manage the job application process.
+Automated Job Application & Follow-Up Tracker is a Google Apps Script and Google Sheets based automation system designed to simplify the job application process.
 
-The project uses Google Sheets as a central application tracker and integrates Gmail and Google Drive to automate personalized job application emails, PDF resume attachments, reply tracking, and follow-up communication.
+The system helps manage job application records, send personalized application emails, attach PDF resumes, track recruiter responses, prevent duplicate applications, and send scheduled follow-up emails.
 
-The main goal is to reduce repetitive manual work involved in sending job applications and maintaining recruiter communication records.
+The project demonstrates practical workflow automation using Google Apps Script, Gmail, Google Sheets, and Google Drive.
 
-## How It Works
+---
 
-Recruiter and company information is maintained in a structured Google Sheet. The automation reads the required information and sends personalized application emails with a PDF resume attachment.
+## ✨ Features
 
-After an email is successfully sent, the system records the sent date and application status in the spreadsheet.
+- Automated job application emails
+- Personalized email content
+- PDF resume attachment
+- Daily email sending limit
+- Duplicate email protection
+- Application status tracking
+- Sent date tracking
+- Automatic reply detection
+- Reply date and reply details tracking
+- Weekly follow-up automation
+- Follow-up count tracking
+- Last follow-up date tracking
+- Google Sheets based application management
 
-The system also includes duplicate email protection to prevent repeated applications being sent to the same email address.
+---
 
-## Reply Tracking
+## 🛠️ Technologies Used
 
-The system periodically checks Gmail for responses from recruiters or companies.
+- Google Apps Script
+- JavaScript
+- Google Sheets
+- Gmail
+- Google Drive
+- CSV
+- Google Apps Script Triggers
 
-When a reply is detected, the spreadsheet is automatically updated with:
+---
+
+## ⚙️ How It Works
+
+### 1. Application Data
+
+Recruiter and company information is maintained in a structured Google Sheet.
+
+The system reads:
+
+- Name
+- Email
+- Job Title
+- Company
+- Application Status
+
+### 2. Automated Email
+
+The `Code.gs` script reads the application records and sends personalized emails.
+
+A PDF resume can be attached automatically from Google Drive.
+
+### 3. Duplicate Protection
+
+Before sending an email, the system checks whether the same email address already exists earlier in the spreadsheet.
+
+Duplicate records are skipped to help prevent repeated applications.
+
+### 4. Reply Tracking
+
+The `ReplyTracker.gs` script searches Gmail for responses from tracked email addresses.
+
+When a reply is detected, the spreadsheet can be updated with:
 
 - Reply status
 - Reply date
 - Reply details
-- Result status
+- Result
 
-This makes it easier to identify companies that have responded without manually checking every application.
+### 5. Weekly Follow-Up
 
-## Follow-Up Automation
+The `FollowUp.gs` script handles follow-up communication.
 
-For applications where no reply has been received, the system supports scheduled follow-up emails.
+Applications that have not received a reply can be considered for follow-up after the configured waiting period.
 
-Weekly follow-ups can be automated while maintaining follow-up limits. Once a recruiter responds, further follow-ups can be avoided.
+The system also records:
 
-## Key Features
+- Follow-up count
+- Last follow-up date
 
-- Automated personalized job application emails
-- PDF resume attachment
-- Daily email limit
-- Duplicate email protection
-- Sent date tracking
-- Application status tracking
-- Automated reply detection
-- Reply date tracking
-- Reply details tracking
-- Weekly follow-up automation
-- Google Sheets based tracking
-- Scheduled triggers
+---
 
-## Technologies Used
+## 📊 Spreadsheet Structure
 
-- Google Apps Script
-- JavaScript
-- Gmail
-- Google Sheets
-- Google Drive
+| Column | Description |
+|---|---|
+| Name | Recruiter or contact name |
+| Email | Contact email |
+| Title | Job/recruitment title |
+| Company | Company name |
+| Sent Date | Date application was sent |
+| Reply | Reply status |
+| Result | Application result |
+| Reply Date | Date of received reply |
+| Reply Details | Short reply content |
+| Follow-up Count | Number of follow-ups |
+| Last Follow-up | Most recent follow-up date |
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```text
+Automated-Job-Application-Follow-Up-Tracker/
+│
 ├── Code.gs
 ├── ReplyTracker.gs
 ├── FollowUp.gs
 ├── sample-data.csv
-├── sample-resume.pdf
+├── Sample_Resume_Automated_Job_Application_Project.pdf
 └── README.md
