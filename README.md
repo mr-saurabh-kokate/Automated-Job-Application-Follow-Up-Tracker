@@ -119,3 +119,11 @@ Automated-Job-Application-Follow-Up-Tracker/
 ├── sample-data.csv
 ├── Sample_Resume_Automated_Job_Application_Project.pdf
 └── README.md
+
+## 📩 Support & Contact
+
+If you face any issue while setting up or running this project, you can contact:
+
+**Email:** saurabhkokate100@gmail.com
+
+Before contacting, please check the Setup section and make sure you have configured your own Google Sheet, Gmail account, Google Drive resume file ID, and required Apps Script permissions.
