@@ -3,6 +3,15 @@
  *
  * Public demonstration version.
  * Replace placeholder configuration values before running.
+ *
+ * Features:
+ * - Personalized job application emails
+ * - Duplicate email protection
+ * - Already sent application protection
+ * - Error logging
+ * - Invalid email / recipient rejection detection
+ * - Permission error detection
+ * - Gmail quota handling
  */
 
 function sendJobEmails() {
@@ -32,7 +41,7 @@ function sendJobEmails() {
 
   let sentCount = 0;
 
-  // ===== PROCESS APPLICATIONS =====
+  // ===== START FROM ROW 2 =====
   for (let i = 1; i < data.length; i++) {
 
     // Stop after daily limit
@@ -43,10 +52,11 @@ function sendJobEmails() {
     // ===== SHEET DATA =====
     const name = data[i][1];       // B = Name
     const email = data[i][2];      // C = Email
+    const title = data[i][3];      // D = Title
     const company = data[i][4];    // E = Company
     const result = data[i][7];     // H = Result
 
-    // Skip empty email
+    // ===== SKIP EMPTY EMAIL =====
     if (!email) {
       continue;
     }
@@ -73,9 +83,15 @@ function sendJobEmails() {
       continue;
     }
 
-    // Skip already sent applications
+    // ===== SKIP ALREADY PROCESSED RECORDS =====
+    const currentResult =
+      String(result).trim().toLowerCase();
+
+    // Sent = already sent successfully
+    // Error = previously failed, do not retry automatically
     if (
-      String(result).trim().toLowerCase() === "sent"
+      currentResult === "sent" ||
+      currentResult === "error"
     ) {
       continue;
     }
@@ -100,25 +116,29 @@ function sendJobEmails() {
 
       "I am writing to express my sincere interest in " +
       "exploring suitable career opportunities at " +
-      companyName + ".\n\n" +
+      companyName + ". I am a motivated and enthusiastic " +
+      "MCA graduate eager to begin the next stage of my " +
+      "career and contribute to a dynamic organization.\n\n" +
 
-      "I am an enthusiastic MCA graduate with a strong " +
-      "interest in Python development, Data Analytics, SQL, " +
-      "REST APIs, Full Stack Development, AI technologies, " +
-      "and workflow automation.\n\n" +
+      "I have a strong interest in Python development, " +
+      "Data Analytics, SQL, REST APIs, Full Stack Development, " +
+      "AI technologies, and workflow automation. During my " +
+      "academic and project work, I have worked on practical " +
+      "projects involving Python, Django, SQL, data analysis, " +
+      "REST APIs, and automation.\n\n" +
 
-      "As a fresher, I am looking for an opportunity where " +
-      "I can apply my technical knowledge, gain practical " +
-      "industry experience, and contribute meaningfully " +
-      "to the organization.\n\n" +
+      "As a fresher, I am looking for an opportunity where I " +
+      "can apply my technical knowledge, gain practical " +
+      "industry experience, and contribute meaningfully to " +
+      "the organization.\n\n" +
 
       "I would be grateful if you could consider my profile " +
       "for any suitable entry-level, fresher, internship, " +
       "or relevant opportunity available at " +
       companyName + ".\n\n" +
 
-      "I have attached my resume in PDF format for your " +
-      "kind consideration.\n\n" +
+      "I have attached my resume in PDF format for your kind " +
+      "consideration.\n\n" +
 
       "Thank you for your time and consideration. " +
       "I look forward to hearing from you.\n\n" +
@@ -128,9 +148,9 @@ function sendJobEmails() {
       "Your Location\n" +
       "your.email@example.com";
 
+    // ===== SEND EMAIL =====
     try {
 
-      // ===== SEND EMAIL =====
       GmailApp.sendEmail(
         email,
         subject,
@@ -181,7 +201,7 @@ function sendJobEmails() {
       let errorType =
         "Unknown Error";
 
-      // ===== ERROR CLASSIFICATION =====
+      // ===== CLASSIFY ERROR =====
 
       if (
         lowerError.includes("quota") ||
@@ -193,6 +213,24 @@ function sendJobEmails() {
           "Quota Exceeded";
 
       } else if (
+        lowerError.includes("550 5.4.1") ||
+        lowerError.includes("recipient address rejected") ||
+        lowerError.includes("recipient rejected")
+      ) {
+
+        errorType =
+          "Recipient Rejected";
+
+      } else if (
+        lowerError.includes("invalid") ||
+        lowerError.includes("address") ||
+        lowerError.includes("malformed")
+      ) {
+
+        errorType =
+          "Invalid Email";
+
+      } else if (
         lowerError.includes("permission") ||
         lowerError.includes("authorization") ||
         lowerError.includes("access denied")
@@ -200,15 +238,6 @@ function sendJobEmails() {
 
         errorType =
           "Permission Error";
-
-      } else if (
-        lowerError.includes("invalid") ||
-        lowerError.includes("recipient") ||
-        lowerError.includes("address")
-      ) {
-
-        errorType =
-          "Invalid Email";
       }
 
       // ===== UPDATE RESULT =====
@@ -233,7 +262,11 @@ function sendJobEmails() {
         .getRange(i + 1, 15)
         .setValue(new Date());
 
-      // Stop if quota is exceeded
+      // ===== STOP ONLY IF QUOTA IS EXCEEDED =====
+      //
+      // Other email errors will not stop the script.
+      // The script will continue with the next row.
+
       if (errorType === "Quota Exceeded") {
         break;
       }
